@@ -1,0 +1,10 @@
+{
+  "name": "ableton-producer-skills",
+  "version": "0.1.0",
+  "description": "A toolkit of Claude Code skills that help music producers compose, arrange, reharmonize, groove, sound-design and sample inside Ableton Live, driven by the Ableton Live Extension SDK (JS/TS automation running in Node beside Live).",
+  "author": {
+    "name": "Korben",
+    "email": "korben00@users.noreply.github.com"
+  },
+  "keywords": ["ableton", "music", "production", "midi", "composition", "extension-sdk"]
+}

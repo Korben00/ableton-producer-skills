@@ -1,0 +1,9 @@
+# Node / build artifacts (the SDK runner project lives elsewhere; skills carry only source)
+node_modules/
+dist/
+*.tsbuildinfo
+.DS_Store
+
+# Local secrets / machine-specific
+.env
+.env.local
