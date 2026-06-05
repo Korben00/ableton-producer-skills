@@ -72,6 +72,10 @@ Or copy the `skills/` folders into your `~/.claude/skills/` (or a plugin you alr
 - The Ableton Live Extension SDK (beta) + a runner project (see `ableton-live-runner`).
 - **Developer Mode** enabled in Live → Preferences → Extensions (re-check after every restart).
 
+## License
+
+[MIT](LICENSE) © 2026 Korben.
+
 ## Credits
 
 Built with Claude Code. Born out of making a reggae X-Files theme and a lo-fi Nirvana track.

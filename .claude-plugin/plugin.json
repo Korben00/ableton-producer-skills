@@ -6,5 +6,6 @@
     "name": "Korben",
     "email": "korben00@users.noreply.github.com"
   },
-  "keywords": ["ableton", "music", "production", "midi", "composition", "extension-sdk"]
+  "keywords": ["ableton", "music", "production", "midi", "composition", "extension-sdk"],
+  "license": "MIT"
 }
