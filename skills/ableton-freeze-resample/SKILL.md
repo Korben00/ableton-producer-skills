@@ -52,7 +52,11 @@ async function renderStems(api, song, startBeat, endBeat) {
 
 ## Limits
 
-- `renderPreFxAudio` targets a track + beat range; it renders the track's pre-effects signal.
+- `renderPreFxAudio` renders the track's **pre-effects** signal — insert FX added by
+  `ableton-fx-chain` / `ableton-tone-recipes` are **NOT** captured. The SDK has no post-FX render
+  verb; for a post-FX print, move the wanted FX onto a return track or accept the dry bounce.
+- It is typed for an `AudioTrack` + beat range; rendering instrument/MIDI tracks relies on it
+  accepting any track — the stems loop's try/catch skips ones that can't render.
 - An empty Drum Rack (no kit) renders silence — load a kit first.
 - Audio import copies the file into the project; use the returned path for clips.
 

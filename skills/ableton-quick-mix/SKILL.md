@@ -54,6 +54,9 @@ for (const t of song.tracks) {
 ## Limits
 
 - No automation → this is a static balance, not moves over time.
-- Sends require return tracks to exist (`song.returnTracks`); create/route accordingly.
+- Sends require return tracks to **already exist** (`song.returnTracks`) — the SDK cannot create a
+  return. Guard the call (`m.sends[0]?.setValue(...)`) and skip the send step if there are no returns,
+  rather than silently no-op.
+- Role classification relies on descriptive track names (which the producer skills set via `makeTrack`).
 
 See `ableton-fx-chain`, `ableton-tone-recipes`.

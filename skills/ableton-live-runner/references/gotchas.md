@@ -27,7 +27,8 @@ Live, because most "it doesn't work" moments map to one of these.
 - **Always kill the host between runs.** A lingering host (and its `extensions-cli` / `sh -c npm`
   wrappers) keeps the dead connection open and blocks re-activation:
   ```bash
-  pkill -f "ExtensionHostNodeModule"; pkill -f "extensions-cli run"; pkill -f "ableton-composer start"
+  # the first two are project-name-independent and do the real work; the third is optional
+  pkill -f "ExtensionHostNodeModule"; pkill -f "extensions-cli run"; pkill -f "<project> start"
   ```
 
 ## Devices

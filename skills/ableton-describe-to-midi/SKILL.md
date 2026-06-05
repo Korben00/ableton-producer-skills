@@ -33,16 +33,20 @@ known song's melody use `ableton-genre-cover`; for a melody over given chords us
 
 ## Mode B — generate at runtime via an LLM (optional, advanced)
 
-Because the extension is a full Node process, `compose()` can call an LLM API and parse structured
-notes. Keep keys in `environment.storageDirectory`; force JSON output and validate it before writing.
+Because the extension is a full Node process it has network access, so `compose()` *can* call an LLM
+API and parse structured notes. Caveats: **verify `fetch` exists in Live's bundled Node** (the runtime
+Node version is not guaranteed — polyfill or use `node-fetch` if it is undefined); **load the API key
+from `environment.storageDirectory`**, not `process.env`; and pin the model in one constant so it is
+easy to update. Force JSON output and validate before writing.
 
 ```ts
-async function llmNotes(brief, bars) {
+const MODEL = "claude-opus-4-8"; // update as models change
+async function llmNotes(apiKey, brief, bars) { // apiKey read from environment.storageDirectory
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
-    headers: { "x-api-key": process.env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json" },
+    headers: { "x-api-key": apiKey, "anthropic-version": "2023-06-01", "content-type": "application/json" },
     body: JSON.stringify({
-      model: "claude-opus-4-8", max_tokens: 2000,
+      model: MODEL, max_tokens: 2000,
       messages: [{ role: "user", content:
         `Return ONLY JSON: {"notes":[{"pitch":0-127,"startTime":beats,"duration":beats,"velocity":1-127}]}.
          ${bars} bars, 4/4. Brief: ${brief}` }],
@@ -51,7 +55,7 @@ async function llmNotes(brief, bars) {
   const txt = (await res.json()).content[0].text;
   return JSON.parse(txt.slice(txt.indexOf("{"), txt.lastIndexOf("}") + 1)).notes;
 }
-// then: clip.notes = validate(await llmNotes(brief, bars));
+// then: clip.notes = validate(await llmNotes(apiKey, brief, bars));
 ```
 
 ## Validation (always, especially Mode B)

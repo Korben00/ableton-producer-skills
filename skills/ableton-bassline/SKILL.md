@@ -18,7 +18,7 @@ Triggers: "write a bassline", "bass from these chords", "[genre] bass". For full
 
 1. **Use `ableton-live-runner`** for build/run/kill + scaffold.
 2. **Get the progression** — from a clip (read `clip.notes`, take the lowest/root per bar) or from
-   text. Note the key (`song.rootNote`).
+   text. Read the key (`song.rootNote`) and `song.scaleIntervals` to keep passing tones diatonic.
 3. **Pick the style feel** (the defining choice). Apply its rhythm template, transposing the root per
    chord. Use low register (root around MIDI 28–40) and a fallback instrument list ending in `Drift`
    (`["Operator","Drift"]` — note `"Bass"` does not insert).
@@ -37,10 +37,11 @@ Triggers: "write a bassline", "bass from these chords", "[genre] bass". For full
 | Funk | syncopated 16ths, root + ♭7 + octave, ghost notes |
 | Lofi | `R(1, long) · · · R(2.5) · · ·` (deep, sparse) |
 
-## Code pattern
+## Code pattern (generic bouncy example — adapt the rhythm to a table row above)
 
 ```ts
-const ROOTS = [/* MIDI root per bar, e.g. */ 33, 33, 32, 37];
+const ROOTS = [/* MIDI root per bar, e.g. */ 33, 33, 32, 37]; // octave pops (r+12) intentionally
+                                                              // exit the bass register
 function writeBass(notes, bars, bpb = 4) {
   for (let bar = 0; bar < bars; bar++) {
     const r = ROOTS[bar % ROOTS.length], b = bar * bpb;

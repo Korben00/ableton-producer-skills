@@ -22,7 +22,8 @@ Triggers: "make a reggae version of the X-Files theme", "lofi cover of Smells Li
    below goes in the scaffold's `compose()`.
 2. **Get the source theme accurate.** The recognizable melody is what sells a cover — verify it (web
    search a transcription / sheet music / letter-note tab) rather than guessing. Capture: key,
-   tempo, time signature, the main melodic motif (as `{t, pitch, dur}` events), and the chord/root
+   tempo, time signature, the main melodic motif (as `{t, p, d}` events — time/pitch/duration in
+   beats, matching the code below), and the chord/root
    progression. A wrong melody ruins the cover; spend the lookup.
 3. **Decide the genre treatment** (ask the user 1–2 focused questions if ambiguous — e.g. sub-style,
    tempo). Map the original harmony onto the genre's rhythmic feel; keep the *identity markers*

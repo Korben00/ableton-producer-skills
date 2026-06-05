@@ -54,6 +54,8 @@ async function applyRecipe(track, r) { for (const [d, p, v] of r.params) await s
 
 - Parameter names/ranges differ across Live editions/versions — **discover them at runtime** before
   setting. Skip unknown params gracefully.
+- Most recipe instruments (`Electric`, `Analog`, `Wavetable`, `Operator`) are **Suite-only** — always
+  end a recipe's `instruments` fallback list with `Drift` so non-Suite editions still make sound.
 - No automation: a recipe is a static parameter snapshot, not a sweep over time.
 
 See `ableton-fx-chain`, `ableton-quick-mix`.

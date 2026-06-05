@@ -87,8 +87,9 @@ type NoteDescription = { pitch: number; startTime: number; duration: number; vel
 - `api.ui.registerContextMenuAction(scope, title, commandId, onRegistered)` — scopes include
   `"Scene"`, `"MidiClip"`, `"AudioClip"`, `"MidiTrack"`, `"AudioTrack"`, `"DrumRack"`, `"Simpler"`,
   `"Sample"`, `"ClipSlot"`, and selection scopes.
-- `api.ui.showModalDialog(url, width, height, onResult, onError)` — open a **WebView** (custom HTML)
-  and receive a string back → build little control panels.
+- `api.ui.showModalDialog(url, width, height, onResult, onError)` — open a **WebView** and receive a
+  string back → build little control panels. Pass a **file URL** (write HTML to `tempDirectory` /
+  `storageDirectory`, pass its `file://` URL), **not** an inline HTML string.
 - `api.ui.showProgressDialog({ text, progress? }, onShow, onCancel)` — progress UI for long jobs.
 
 ## Environment — `api.environment`

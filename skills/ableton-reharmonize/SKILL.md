@@ -42,9 +42,18 @@ const VOICE = {
   maj9:  (r) => [r+4, r+7, r+11, r+14],  // 3 5 7 9
   dom13: (r) => [r+4, r+10, r+14, r+21], // 3 ♭7 9 13
 };
-function chordAt(rootPc, quality, octave = 5) {        // octave 5 → C=72
+function chordAt(rootPc, quality, octave = 4) {  // octave 4 → C4 = 60 (mid keys register)
   const r = rootPc + (octave + 2) * 12;
-  return VOICE[quality](r).map(p => ((p - 12) % 48) + 48); // fold into a tidy register
+  return VOICE[quality](r);                      // raw voicing; smooth it with voiceLead() below
+}
+// Voice-leading: invert each note of `cur` toward `prev` by octaves to minimize total motion.
+function voiceLead(prev, cur) {
+  if (!prev) return cur;
+  return cur.map((p) => {
+    while (p - prev[0] > 6) p -= 12;
+    while (prev[0] - p > 6) p += 12;
+    return p;
+  });
 }
 ```
 

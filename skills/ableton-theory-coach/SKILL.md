@@ -31,8 +31,10 @@ Triggers: "analyze this clip", "what chords/key is this", "explain the harmony/p
    - **Voice-leading** → common tones, smooth vs leapy motion, parallel intervals.
 4. **Explain clearly** — concise, leveled to the user; name the theory and say why it sounds the way
    it does (e.g. "the ♭6 over the tonic is what makes it eerie").
-5. **Optionally render a WebView report** with `api.ui.showModalDialog(htmlUrl, w, h, …)` for a nice
-   visual breakdown (chord chart + notes), or just print the analysis.
+5. **Optionally render a WebView report** with `api.ui.showModalDialog(url, w, h, onResult, onError)` —
+   it takes a **file URL, not inline HTML**: write the HTML to `environment.tempDirectory` /
+   `storageDirectory` and pass its `file://` URL; the callback returns a string. Or just print the
+   analysis.
 
 ## Chord-detection sketch
 

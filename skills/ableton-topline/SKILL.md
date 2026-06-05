@@ -33,14 +33,14 @@ melody use `ableton-genre-cover`; for free natural-language generation use `able
 ## Code pattern (motif + transposed answer)
 
 ```ts
-const MOTIF = [ {t:0,p:0,d:1}, {t:1,p:2,d:1}, {t:2,p:4,d:2} ]; // scale-degree offsets
+const MOTIF = [ {t:0,p:0,d:1}, {t:1,p:2,d:1}, {t:2,p:4,d:1.5} ]; // scale-degree offsets; d:1.5 = a breath
 function deg(rootMidi, scale, n) {                 // n-th scale degree (with octave wrap)
   return rootMidi + scale[((n % scale.length) + scale.length) % scale.length] + 12 * Math.floor(n / scale.length);
 }
-function writeTopline(notes, rootMidi, scale, phrases) {  // phrases = [{bar, shift}]
+function writeTopline(notes, rootMidi, scale, phrases, bpb = 4) {  // phrases = [{bar, shift}]
   for (const ph of phrases)
     for (const e of MOTIF)
-      notes.push({ pitch: deg(rootMidi, scale, e.p + ph.shift), startTime: ph.bar*4 + e.t, duration: e.d, velocity: vary(96) });
+      notes.push({ pitch: deg(rootMidi, scale, e.p + ph.shift), startTime: ph.bar*bpb + e.t, duration: e.d, velocity: vary(96) });
 }
 ```
 

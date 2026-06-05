@@ -1,6 +1,6 @@
 ---
 name: Ableton Sample Chopper
-description: This skill should be used when the user asks to "chop a sample", "load a sample into Simpler", "make a beat from this sample", "slice this loop", "map a sample across the keys", or wants an audio file imported and turned into a playable instrument in Ableton Live. Imports audio and loads it into a Simpler/Drum Rack, mapping slices to MIDI.
+description: This skill should be used when the user asks to "chop a sample", "load a sample into Simpler", "make a beat from this sample", "slice this loop", "map a sample across the keys", or wants an audio file imported and turned into a playable instrument in Ableton Live. Imports audio and loads it into a Simpler, then writes MIDI to repitch (reliable) or replay it.
 version: 0.1.0
 ---
 
@@ -26,25 +26,43 @@ Triggers: "chop a sample", "load into Simpler", "beat from this sample", "slice 
    ```ts
    const track = await song.createMidiTrack();
    await track.insertDevice("Simpler", 0);
-   const simpler = track.devices[0]; // a Simpler/RackDevice
+   const simpler = track.devices[0] as any; // Simpler/Sample — replaceSample isn't on Device type
    await simpler.replaceSample(imported);
    ```
-4. **Choose a mapping** and write MIDI to trigger it:
-   - **Pitched one-shot** — play a melody/bassline; each MIDI note repitches the sample.
-   - **Sliced loop** — in Simpler's slice mode, consecutive notes (from the base note up) trigger
-     successive slices; write notes in slice order to "replay" or re-sequence the loop.
-5. **Confirm** with the user which mapping/slice approach (sample content determines the best one),
-   then write the MIDI clip.
+4. **Choose a mapping** (lead with the SDK-safe one):
+   - **Pitched one-shot (reliable)** — each MIDI note repitches the whole sample; works with nothing
+     but `replaceSample`. Use it for melodic/bass replay of a one-shot or vocal chop.
+   - **Sliced loop (UI-dependent — flag this)** — slicing is set in Simpler's **UI**; the SDK only
+     replaces the sample and **cannot set slice mode, slice count, or the slice→note map**. Only use
+     it if the user has manually enabled Slice mode AND confirms the default chromatic-from-base
+     layout; otherwise the notes won't trigger the expected slices.
+5. **Confirm** with the user which mapping fits the sample, then write the MIDI clip — prefer the
+   pitched one-shot unless slicing is explicitly set up.
 
-## Code pattern (replay a chopped loop, 16 slices over a bar)
+## Code pattern
 
 ```ts
-async function chopLoop(api, song, file, slices = 16, base = 48 /* C3 */) {
+// Load a sample into a Simpler — the SDK-guaranteed part.
+async function loadSimpler(api, song, file, name = "Sampler") {
   const path = await api.resources.importIntoProject(file);
   const track = await song.createMidiTrack();
-  track.name = "Chop";
+  track.name = name;
   await track.insertDevice("Simpler", 0);
-  await track.devices[0].replaceSample(path); // set Simpler to Slice mode in the UI
+  await (track.devices[0] as any).replaceSample(path); // replaceSample isn't on the Device type
+  return track;
+}
+
+// Pitched one-shot (RELIABLE): each note repitches the whole sample; no slice mode needed.
+async function pitchedOneShot(api, song, file, notes /* NoteDescription[] */, len) {
+  const track = await loadSimpler(api, song, file, "One-shot");
+  const clip = await track.createMidiClip(0, len);
+  clip.notes = notes; // a melody/bassline
+}
+
+// Sliced loop (UI-DEPENDENT): only works if the user enabled Slice mode in Simpler's UI and the
+// default chromatic-from-base layout matches. The SDK can neither set nor verify this.
+async function chopLoop(api, song, file, slices = 16, base = 48 /* C3 */) {
+  const track = await loadSimpler(api, song, file, "Chop");
   const notes = Array.from({ length: slices }, (_, i) => ({
     pitch: base + i, startTime: i * (4 / slices), duration: 4 / slices, velocity: 100,
   }));
@@ -55,10 +73,10 @@ async function chopLoop(api, song, file, slices = 16, base = 48 /* C3 */) {
 
 ## Limits
 
-- Slice mode itself is set in Simpler's UI; the API replaces the sample and triggers notes — confirm
-  the user enables Slice (or use a pitched mapping that needs no slicing).
+- **The pitched one-shot is the reliable path.** Slice mode is set in Simpler's UI; the API only does
+  `replaceSample` and cannot set or verify slicing — treat sliced-loop replay as best-effort.
 - Warp/tempo of the source affects pitched playback; mention warping if the loop must stay in time.
-- For multi-pad kits (one sample per pad) a Drum Rack is needed; building racks per-pad is limited via
-  the API — Simpler slicing is the reliable path.
+- For multi-pad kits (one sample per pad) a Drum Rack is needed, but building racks per-pad is not
+  exposed by the API — use Simpler (one sample) instead.
 
 See `ableton-freeze-resample`, `ableton-drum-groove`.

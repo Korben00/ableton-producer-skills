@@ -25,11 +25,14 @@ For designing an instrument's core tone use `ableton-tone-recipes`; for levels u
    filter cutoff, dry/wet, drive, feedback.
 4. **Verify** by reading values back, and keep wet effects (reverb/delay) modest unless going dub.
 
-## Confirmed device names
+## Device names
 
-`EQ Eight`, `Compressor`, `Glue Compressor`, `Saturator`, `Overdrive`, `Redux`, `Vinyl Distortion`,
-`Auto Filter`, `Chorus-Ensemble`, `Reverb`, `Delay`, `Echo`, `Amp`, `Cabinet`. (`Auto Pan` did **not**
-insert — provide a fallback or skip.)
+Use the **canonical confirmed/failed list** in `ableton-live-runner/references/gotchas.md` (single
+source of truth — do not fork it). Common confirmed audio FX: `EQ Eight`, `Compressor`, `Saturator`,
+`Overdrive`, `Redux`, `Vinyl Distortion`, `Auto Filter`, `Chorus-Ensemble`, `Reverb`, `Delay`, `Echo`,
+`Amp`, `Cabinet`. (`Auto Pan` did **not** insert.) For any device not on the confirmed list (e.g.
+`Glue Compressor`), pass a fallback slot like `["Glue Compressor", "Compressor"]` so the chain still
+builds if it is unavailable.
 
 ## Genre chain presets
 
@@ -38,7 +41,7 @@ insert — provide a fallback or skip.)
 | Lofi-ize | `Saturator` → `Redux`/`Vinyl Distortion` → `Auto Filter` (LP) → `Chorus-Ensemble` → `Reverb` |
 | Dub-ize | `EQ Eight` → `Echo`/`Delay` (high feedback) → `Reverb` (long) |
 | Clean guitar tone | `Overdrive`(light) → `Amp` → `Cabinet` → `Chorus-Ensemble` → `Reverb` |
-| Glue a bus | `Glue Compressor` → `EQ Eight` → `Saturator`(gentle) |
+| Glue a bus | `Compressor` (or `Glue Compressor` w/ fallback) → `EQ Eight` → `Saturator`(gentle) |
 | Warm sub bass | `Auto Filter`(LP) → `Compressor` → `Saturator` |
 
 ## Code pattern
@@ -52,6 +55,8 @@ await setParam(track, "Reverb", "Dry/Wet", 0.18);
 
 ## Limits
 
+- Param names/scales (`"Frequency"`, `"Dry/Wet"`, 0–1 vs Hz) differ per device/edition — discover them
+  at runtime (`ableton-tone-recipes`) before `setParam`; the values in the code are illustrative.
 - Effects need an instrument before them to process; on an empty Drum Rack they process nothing until
   a kit is dropped.
 - No automation lanes — character must be a static setting (or implied by note dynamics).
